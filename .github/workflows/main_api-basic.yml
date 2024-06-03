@@ -7,8 +7,11 @@ name: Build and deploy Python app to Azure Web App - api-basic
 on:
   push:
     branches:
-      - main
-  workflow_dispatch: # Enables manual triggering
+      - '**' # Trigger on any branch push, useful for CI on feature branches
+  pull_request:
+    branches:
+      - main # Run on PRs targeting the main branch
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   build:
@@ -26,14 +29,14 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip release.zip ./* -r -x .github/\*
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v3
@@ -49,7 +52,7 @@ jobs:
     environment:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
@@ -59,11 +62,11 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
           app-name: 'api-basic'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_db1a0ae6980f49e1ab16d60fe277da1c }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
