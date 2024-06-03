@@ -69,4 +69,4 @@ jobs:
         with:
           app-name: 'api-basic'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_db1a0ae6980f49e1ab16d60fe277da1c }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
